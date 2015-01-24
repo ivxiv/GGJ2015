@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class OuijaBoard : Puzzle 
 {
     [SerializeField]
-    private string m_word = "MURDER";
+    private string[] m_words = new string[0];
 
     [SerializeField]
     private GameObject m_planchette = null;
@@ -20,6 +20,9 @@ public class OuijaBoard : Puzzle
 
     [SerializeField]
     private AudioSource m_nearTargetAudioSource = null;
+
+    [SerializeField]
+    private AudioSource m_planchetteMovingAudioSource = null;
 
     [SerializeField]
     private AudioClip m_successClip = null;
@@ -42,8 +45,12 @@ public class OuijaBoard : Puzzle
 
     private float m_nearTargetTimer = 0.0f;
 
+    private string m_word = string.Empty;
+
     public void Awake()
     {
+        m_word = m_words[Random.Range(0, m_words.Length)];
+
         foreach( Transform letter in GetComponentsInChildren<Transform>().Where((tran) => m_word.ToUpper().Contains(tran.gameObject.name.ToUpper())) )
         {
             m_letters[letter.gameObject.name[0]] = letter;
@@ -51,6 +58,10 @@ public class OuijaBoard : Puzzle
 
         m_originalPosition = m_planchette.transform.position;
         m_text.text = "";
+
+        m_audio.volume = 0.0f;
+        m_nearTargetAudioSource.volume = 0.0f;
+        m_planchetteMovingAudioSource.volume = 0.0f;
     }
 
     public void Update()
@@ -72,7 +83,13 @@ public class OuijaBoard : Puzzle
                 controlDirection.Normalize();
             }
 
+            m_planchetteMovingAudioSource.volume = controlDirection.magnitude > 0.0f ? 1.0f : 0.0f;
+
             m_planchette.transform.position = m_planchette.transform.position + controlDirection * m_planchetteSpeed;
+        }
+        else
+        {
+            m_planchetteMovingAudioSource.volume = 0.0f;
         }
 
         if( m_index < m_word.Length )
@@ -93,7 +110,6 @@ public class OuijaBoard : Puzzle
                 if (m_nearTargetTimer >= m_nearTargetTime)
                 {
                     m_index++;
-                    GameManager.Instance.PlaySound(m_successClip, 1.0f);
                     m_planchette.transform.position = m_originalPosition;
 
                     m_text.text = m_word.Substring(0, m_index);
@@ -103,6 +119,12 @@ public class OuijaBoard : Puzzle
                         m_nearTargetTimer = 0.0f;
                         m_audio.volume = 0.0f;
                         m_planchette.gameObject.SetActive(false);
+
+                        GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
+                    }
+                    else
+                    {
+                        GameManager.Instance.PlaySound(m_successClip, 1.0f);
                     }
                 }
             }

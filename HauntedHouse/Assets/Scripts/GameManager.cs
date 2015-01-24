@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
         get { return m_instance; }
     }
 
+    public AudioClip PuzzleSolvedSound = null;
+
     private AudioSource m_audioSource = null;
 
     private void Awake()
