@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿/*
+using UnityEngine;
 using UnityEditor;
 
 public class PuzzleClueAsset
@@ -13,3 +14,4 @@ public class PuzzleClueAsset
 	
 	#endregion
 }
+*/
