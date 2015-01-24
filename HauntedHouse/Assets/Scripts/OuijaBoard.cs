@@ -19,6 +19,9 @@ public class OuijaBoard : Puzzle
     private AudioSource m_audio = null;
 
     [SerializeField]
+    private AudioSource m_nearTargetAudioSource = null;
+
+    [SerializeField]
     private AudioClip m_successClip = null;
 
     [SerializeField]
@@ -30,9 +33,14 @@ public class OuijaBoard : Puzzle
     [SerializeField]
     private Text m_text = null;
 
+    [SerializeField]
+    private float m_nearTargetTime = 1.0f;
+
     private int m_index = 0;
     private Vector3 m_originalPosition = Vector3.zero;
     private Dictionary<char, Transform> m_letters = new Dictionary<char,Transform>();
+
+    private float m_nearTargetTimer = 0.0f;
 
     public void Awake()
     {
@@ -65,19 +73,30 @@ public class OuijaBoard : Puzzle
 
             if( distance < m_minimumDistance )
             {
-                m_index++;
-                GameManager.Instance.PlaySound(m_successClip, 1.0f);
-                m_planchette.transform.position = m_originalPosition;
+                m_nearTargetTimer += Time.deltaTime;
 
-                m_text.text = m_word.Substring(0, m_index);
-
-                if (m_index == m_word.Length)
+                if (m_nearTargetTimer >= m_nearTargetTime)
                 {
-                    m_audio.volume = 0.0f;
-                    m_planchette.gameObject.SetActive(false);
+                    m_index++;
+                    GameManager.Instance.PlaySound(m_successClip, 1.0f);
+                    m_planchette.transform.position = m_originalPosition;
+
+                    m_text.text = m_word.Substring(0, m_index);
+
+                    if (m_index == m_word.Length)
+                    {
+                        m_nearTargetTimer = 0.0f;
+                        m_audio.volume = 0.0f;
+                        m_planchette.gameObject.SetActive(false);
+                    }
                 }
             }
-
+            else
+            {
+                m_nearTargetTimer = 0.0f;
+            }
         }
+
+        m_nearTargetAudioSource.volume = m_nearTargetTimer > 0.0f ? 1.0f : 0.0f;
     }
 }
