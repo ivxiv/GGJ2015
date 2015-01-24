@@ -21,24 +21,24 @@ public class TVControl : MonoBehaviour
 	
 	void OnGUI()
 	{
-		Transform down_channel= this.transform.FindChild("down_channel");
-		Transform up_channel= this.transform.FindChild("up_channel");
+		Transform downChannel= this.transform.FindChild("down_channel");
+		Transform upChannel= this.transform.FindChild("up_channel");
 		
-		if (null != down_channel)
+		if (null != downChannel)
 		{
-			Vector3 screen_point= Camera.main.WorldToScreenPoint(down_channel.position);
+			Vector3 screenPoint= Camera.main.WorldToScreenPoint(downChannel.position);
 			
-			if (GUI.Button(new Rect(screen_point.x, screen_point.y, 20, 20), "-"))
+			if (GUI.Button(new Rect(screenPoint.x, screenPoint.y, 20, 20), "-"))
 			{
 				Debug.Log("DOWN channel");
 			}
 		}
 		
-		if (null != up_channel)
+		if (null != upChannel)
 		{
-			Vector3 screen_point= Camera.main.WorldToScreenPoint(up_channel.position);
+			Vector3 screenPoint= Camera.main.WorldToScreenPoint(upChannel.position);
 			
-			if (GUI.Button(new Rect(screen_point.x, screen_point.y, 20, 20), "+"))
+			if (GUI.Button(new Rect(screenPoint.x, screenPoint.y, 20, 20), "+"))
 			{
 				Debug.Log("UP channel");
 			}
