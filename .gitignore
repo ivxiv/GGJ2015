@@ -1,4 +1,6 @@
-
+HauntedHouse/*.csproj
+HauntedHouse/*.sln
+HauntedHouse/*.userprefs
 HauntedHouse/Assets/level.unity
 HauntedHouse/Library
 HauntedHouse/Output
