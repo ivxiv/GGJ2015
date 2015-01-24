@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+index.html
+Friday January 23, 2015 10:11pm Stefan S.
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Grandma's Boys</title>
+<meta name="keywords" content="global game jam, ggj, unity, unity3d"/>
+<meta name="description" content="IVxIV Software"/>
+
+<!-- javascript -->
+
+<script src="jquery-1.9.1.js" type="text/javascript"></script>
+<script type="text/javascript">
+<!--
+/* ---------- interface */
+
+$(document).ready(
+	function()
+	{
+		set_td_contents("page_content_td", get_home_html());
+		
+		// nav-bar buttons
+		$("#nav_bar_home_button").click(
+			function()
+			{
+				set_td_contents("page_content_td", get_home_html());
+			}
+		);
+		$("#nav_bar_project_button").click(
+			function()
+			{
+				set_td_contents("page_content_td", get_project_html());
+			}
+		);
+		$("#nav_bar_about_button").click(
+			function()
+			{
+				set_td_contents("page_content_td", get_about_html());
+			}
+		);
+		$("#nav_bar_team_button").click(
+			function()
+			{
+				set_td_contents("page_content_td", get_team_html());
+			}
+		);
+		
+		// email form submit
+		$("#email_form_submit").click(
+			function()
+			{
+				send_contact_email();
+				
+				return;
+			}
+		);
+		
+		return;
+	}
+);
+
+/* ---------- content methods */
+
+function get_home_html()
+{
+	return "Hello, welcome to the Grandma's Boys website for the 2015 Global Game Jam.";
+}
+
+function get_project_html()
+{
+	return "<p><big>A really sweet Unity Web Player game will go here</big></p>";
+}
+
+function get_about_html()
+{
+	return "<p>Some juicy details about the game will go here</p>"
+}
+
+function get_team_html()
+{
+	return "<p><big>Grandma's Boys:</big></p>" +
+		"<p><ul>" +
+		"<li>Antonio</li>" +
+		"<li>Casey</li>" +
+		"<li>Jeff</li>" +
+		"<li>Mike</li>" +
+		"<li>Nick</li>" +
+		"<li>Seth</li>" +
+		"<li>Stefan</li>" +
+		"</ul></p>";
+}
+
+function set_td_contents(td_id, contents)
+{
+	var $cell= document.getElementById(td_id);
+	
+	if (!(null===$cell))
+	{
+		$cell.innerHTML= contents;
+	}
+	
+	return;
+}
+
+-->
+</script>
+
+<!-- css -->
+
+<style type="text/css">
+<!--
+	body
+	{
+		color: #080808;
+		background-color: #ebebeb;
+		font-family: "Copperplate", "Century Gothic", "Arial Black", "Arial";
+	}
+	.nav_button
+	{
+		border:0px;
+		display:inline-block;
+		font-size:24px;
+		font-weight:bold;
+		padding:5% 0% 5% 0%;
+		width:100%;
+		height:100%;
+		text-decoration:none;
+	}
+	.nav_button:hover
+	{
+		background-color:#e9e9e9;
+	}
+	.nav_button:active
+	{
+		position:relative;
+		top:1px;
+	}
+	.main_content
+	{
+		padding:5% 5% 5% 5%;
+		width:100%;
+		height:100%;
+	}
+-->
+</style>
+
+</head>
+
+<!-- document -->
+
+<body>
+
+<!-- main -->
+
+<div>
+<table width="100%">
+<tr id="header_tr"><table width="100%"><tr>
+	<td width="50%" align="left" valign="top"><p><b><big><big>Grandma's Boys</big></b></p></td>
+	<td width="50%" align="right" valign="center">&nbsp;</td>
+</tr></table></tr>
+<tr id="header_spacing_tr" height=20><td>&nbsp;</td></tr>
+<tr id="button_bar_tr"><table width="100%" bgcolor="#ffffff"><tr>
+	<td width="25%"><center><div id="nav_bar_home_button" class="nav_button">Home</div></center></td>
+	<td width="25%"><center><div id="nav_bar_project_button" class="nav_button">Play!</div></center></td>
+	<td width="25%"><center><div id="nav_bar_about_button" class="nav_button">About</div></center></td>
+	<td width="25%"><center><div id="nav_bar_team_button" class="nav_button">Team</div></center></td>
+</tr></table></tr>
+<tr id="page_content_tr"><table width="100%"><tr>
+	<td id="page_content_td" width="100%" rowspan=20 class="main_content"><div id="main_content_div"></div></td>
+</tr></table></tr>
+</table>
+</div>
+
+<!-- footer -->
+
+<div align="right" style="position:fixed; width:99%; padding:5px; bottom:0px;">
+<small>&copy; 2015 by Grandma's Boys</small>
+</div>
+
+</body>
+</html>
