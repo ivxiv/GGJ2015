@@ -55,10 +55,25 @@ public class OuijaBoard : Puzzle
 
     public void Update()
     {
-        Vector3 control = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        control.Normalize();
+        if( Input.GetMouseButton(0) )
+        {
+            Camera mainCamera = GetComponentInParent<Camera>();
+            Vector3 worldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        m_planchette.transform.position = m_planchette.transform.position + control * m_planchetteSpeed;
+            Vector3 controlDirection = worldPoint - m_planchette.transform.position;
+            controlDirection.z = 0.0f;
+            
+            if( controlDirection.magnitude < m_planchetteSpeed )
+            {
+                controlDirection = Vector3.zero;
+            }
+            else
+            {
+                controlDirection.Normalize();
+            }
+
+            m_planchette.transform.position = m_planchette.transform.position + controlDirection * m_planchetteSpeed;
+        }
 
         if( m_index < m_word.Length )
         {
