@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     public void PlaySound( AudioClip audioClip, float volume = 1.0f )
     {
-        m_audioSource.volume = volume;
+		m_audioSource.volume = volume;
         m_audioSource.clip = audioClip;
         m_audioSource.Play();
     }

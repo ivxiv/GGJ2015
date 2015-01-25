@@ -1,29 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class Puzzle : MonoBehaviour 
 {
-	#region structures
-	
-	public class PuzzleClue : ScriptableObject
-	{
-		#region data
-		
-		public string id;
-		
-		public Texture2D image;
-		public MovieTexture video;
-		public AudioClip audio;
-		public string text;
-		
-		#endregion
-	}
-	
-	#endregion
-	
 	#region data
 	
-	public PuzzleClue[] clueList;
+	public List<PuzzleClue> clueList;
 	
 	#endregion
 	
@@ -37,6 +20,11 @@ public abstract class Puzzle : MonoBehaviour
 	void Update()
 	{
 		return;
+	}
+	
+	internal List<PuzzleClue> GetPuzzleClues()
+	{
+		return this.clueList;
 	}
 	
 	#endregion
