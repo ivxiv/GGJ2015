@@ -22,7 +22,7 @@ public class Dolls : Puzzle
     private float m_shakeMagnitude = 0.1f;
 
     const int numDollHeads = 9;
-    const int numSolutionTones = 2;
+    const int numSolutionTones = 3;
 
     private List<AudioClip> m_orderedGoodClips = null;
     private List<int> m_orderedGoodIndices = null;
@@ -63,6 +63,8 @@ public class Dolls : Puzzle
                 int randomDollIndex = goodIndices[Random.Range(0, goodIndices.Count)];
                 m_orderedGoodIndices.Add(randomDollIndex);
                 goodIndices.Remove(randomDollIndex);
+
+				Debug.Log( randomDollIndex );
             }
 
             m_badIndices = new HashSet<int>(goodIndices);
@@ -106,6 +108,7 @@ public class Dolls : Puzzle
 
         for (int i = 0; i < numSolutionTones; ++i)
         {
+			Debug.Log( m_orderedGoodClips[i].name );
             yield return StartCoroutine(PlaySound(m_orderedGoodClips[i], -1));
         }
 
@@ -140,11 +143,11 @@ public class Dolls : Puzzle
             
             if( m_progress < numSolutionTones )
             {
-                StartCoroutine(PlaySound(m_goodClips[orderedIndex], dollIndex));
+                StartCoroutine(PlaySound(m_orderedGoodClips[orderedIndex], dollIndex));
             }
             else
             {
-                StartCoroutine(PlayFinalSolution(m_goodClips[orderedIndex], dollIndex));
+				StartCoroutine(PlayFinalSolution(m_orderedGoodClips[orderedIndex], dollIndex));
             }
         }
     }
