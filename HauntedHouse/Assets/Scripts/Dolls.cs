@@ -67,6 +67,14 @@ public class Dolls : Puzzle
         }
     }
 
+    protected override void OnTimeUp()
+    {
+    }
+    
+    protected override void OnComplete()
+    {
+    }
+
     public void OnSolutionDollClick()
     {
         if(!m_acceptInput)

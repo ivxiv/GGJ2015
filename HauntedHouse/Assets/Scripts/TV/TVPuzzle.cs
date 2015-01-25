@@ -123,6 +123,14 @@ public class TVPuzzle : Puzzle
 		
 		return;
 	}
+
+    protected override void OnTimeUp()
+    {
+    }
+    
+    protected override void OnComplete()
+    {
+    }
 	
 	public List<TVChannel> GetChannelsSorted()
 	{

@@ -1,23 +1,51 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof(NetworkView))]
 public class GameManager : MonoBehaviour 
 {
+	#region singleton
+	
     private static GameManager m_instance = null;
     public static GameManager Instance
     {
         get { return m_instance; }
     }
+    
+    #endregion
+    
+	#region data
 
     public AudioClip PuzzleSolvedSound = null;
 
     private AudioSource m_audioSource = null;
+    
+    public List<AudioClip> AudioClipCatalog;
+    
+    #endregion
+    
+	#region methods
 
     private void Awake()
     {
         m_instance = this;
         m_audioSource = gameObject.AddComponent<AudioSource>();
+    }
+    
+    private AudioClip LocateAudioClipByName(string audioClipName)
+    {
+    	string testName= audioClipName.ToLowerInvariant();
+    	
+		foreach (AudioClip clip in AudioClipCatalog)
+		{
+			if ((null != clip) && testName.Equals(clip.name.ToLowerInvariant()))
+			{
+				return clip;
+			}
+		}
+		
+		return null;
     }
 
 	public void PlaySoundPsychicServer(AudioClip audioClip, float volume = 1.0f)
@@ -27,7 +55,8 @@ public class GameManager : MonoBehaviour
 			// call everything on both host + client
 			RPCMode callMode= RPCMode.All;
 			
-			networkView.RPC("PlaySoundPsychicServer_Internal", callMode, audioClip, volume);
+			networkView.RPC("PlaySoundPsychicServer_Internal", callMode, audioClip.name, volume);
+			Debug.Log("RPC=> PlaySoundPsychicServer_Internal()");
 		}
 		else
 		{
@@ -39,11 +68,25 @@ public class GameManager : MonoBehaviour
 	}
 	
 	[RPC]
-	private void PlaySoundPsychicServer_Internal(AudioClip audioClip, float volume )
+	private void PlaySoundPsychicServer_Internal(string audioClipName, float volume )
 	{
 		if (IsNetworkPsychicServer())
 		{
-			PlaySound(audioClip, volume);
+			AudioClip clip= LocateAudioClipByName(audioClipName);
+			
+			if (null != clip)
+			{
+				Debug.Log(string.Format("playing server sound '{0}'", audioClipName));
+				PlaySound(clip, volume);
+			}
+			else
+			{
+				Debug.LogWarning(string.Format("audio clip '{0}' is missing from the GameManager's catalog", audioClipName));
+			}
+		}
+		else
+		{
+			Debug.Log("skipping sound b/c we're not the server");
 		}
 		
 		return;
@@ -56,7 +99,8 @@ public class GameManager : MonoBehaviour
 			// call everything on both host + client
 			RPCMode callMode= RPCMode.All;
 			
-			networkView.RPC("PlaySoundHauntedClient_Internal", callMode, audioClip, volume);
+			networkView.RPC("PlaySoundHauntedClient_Internal", callMode, audioClip.name, volume);
+			Debug.Log("RPC=> PlaySoundHauntedClient_Internal()");
 		}
 		else
 		{
@@ -68,11 +112,25 @@ public class GameManager : MonoBehaviour
 	}
 	
 	[RPC]
-	private void PlaySoundHauntedClient_Internal(AudioClip audioClip, float volume )
+	private void PlaySoundHauntedClient_Internal(string audioClipName, float volume )
 	{
 		if (IsNetworkHauntedClient())
 		{
-			PlaySound(audioClip, volume);
+			AudioClip clip= LocateAudioClipByName(audioClipName);
+			
+			if (null != clip)
+			{
+				Debug.Log(string.Format("playing client sound '{0}'", audioClipName));
+				PlaySound(clip, volume);
+			}
+			else
+			{
+				Debug.LogWarning(string.Format("audio clip '{0}' is missing from the GameManager's catalog", audioClipName));
+			}
+		}
+		else
+		{
+			Debug.Log("skipping sound b/c we're not the client");
 		}
 		
 		return;
@@ -87,7 +145,7 @@ public class GameManager : MonoBehaviour
     
     internal NetworkManager GetNetworkManager()
     {
-    	return GetComponent<NetworkManager>();
+    	return this.GetComponentInChildren<NetworkManager>();
     }
     
     public bool IsNetworkActive()
@@ -123,7 +181,5 @@ public class GameManager : MonoBehaviour
 		return;
 	}
 	
-	/*
-	RPC methods
-	*/
+	#endregion
 }

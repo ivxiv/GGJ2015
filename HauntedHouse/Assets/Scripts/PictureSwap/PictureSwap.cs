@@ -44,6 +44,14 @@ public class PictureSwap : Puzzle
         RandomizePositions();
     }
 
+    protected override void OnTimeUp()
+    {
+    }
+    
+    protected override void OnComplete()
+    {
+    }
+
     public void CheckForWin()
     {
         if (CheckSolution())
