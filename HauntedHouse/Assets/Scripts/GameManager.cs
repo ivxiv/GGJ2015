@@ -180,7 +180,7 @@ public class GameManager : MonoBehaviour
 			case eGameState.PictureSwapPuzzleOutro: RenderOutroGUI("Am I really related to these people?"); break;
 			case eGameState.DollsPuzzleIntro: RenderLoadingGUI("Grandma's Creepy Doll Collection..."); break;
 			case eGameState.DollsPuzzleActive: RenderPuzzleGameGUI(); break;
-			case eGameState.DollsPuzzleOutro: RenderOutroGUI(string.Empty); break;
+			case eGameState.DollsPuzzleOutro: RenderOutroGUI("OK... I hate dolls now."); break;
 			case eGameState.TVPuzzleIntro: RenderLoadingGUI("Who left the TV on?"); break;
 			case eGameState.TVPuzzleActive: RenderPuzzleGameGUI(); break;
 			case eGameState.TVPuzzleOutro: RenderOutroGUI("Cable seems to be on the fritz..."); break;
@@ -260,6 +260,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (!RenderPsychicHotlineGUI())
 		{
+#if false // not using the new hub hotness?
 			if (null != this.RoomHubTexture)
 			{
 				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.RoomHubTexture);
@@ -297,6 +298,7 @@ public class GameManager : MonoBehaviour
 					networkManager.RenderGUI();
 				}
 			}
+#endif
 		}
 		
 		return;
