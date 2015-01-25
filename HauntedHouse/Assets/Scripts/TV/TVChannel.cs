@@ -7,5 +7,6 @@ public class TVChannel : ScriptableObject
 	public string channelName;
 	public Texture2D texture;
 	public MovieTexture movie;
+	public AudioClip audio;
 	public string closedCaptions;
 }

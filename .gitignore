@@ -9,3 +9,5 @@ HauntedHouse/obj
 HauntedHouse/*.sln
 HauntedHouse/*.csproj
 HauntedHouse/*.suo
+
+HauntedHouse/Assets/level.unity
