@@ -121,12 +121,10 @@ public class Dolls : Puzzle
 
     private IEnumerator PlaySoundHauntedClient( AudioClip clip )
     {
-        if (GameManager.Instance.PlaySoundHauntedClient(clip))
-        {
-			m_acceptInput = false;
-	        yield return new WaitForSeconds(clip.length);
-    	    m_acceptInput = true;
-	    }
+		GameManager.Instance.PlaySoundHauntedClient(clip);
+        m_acceptInput = false;
+        yield return new WaitForSeconds(clip.length);
+	    m_acceptInput = true;
 	    yield return null;
     }
 
@@ -143,12 +141,10 @@ public class Dolls : Puzzle
     
 	private IEnumerator PlaySoundPsychicServer( AudioClip clip )
 	{
-		if (GameManager.Instance.PlaySoundPsychicServer(clip))
-		{
-			m_acceptInput = false;
-			yield return new WaitForSeconds(clip.length);
-			m_acceptInput = true;
-		}
+		GameManager.Instance.PlaySoundPsychicServer(clip);
+		m_acceptInput = false;
+		yield return new WaitForSeconds(clip.length);
+		m_acceptInput = true;
 		yield return null;
 	}
 	

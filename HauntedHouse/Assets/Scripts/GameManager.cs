@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof(NetworkView))]
 public class GameManager : MonoBehaviour 
 {
     private static GameManager m_instance = null;
@@ -19,26 +20,62 @@ public class GameManager : MonoBehaviour
         m_audioSource = gameObject.AddComponent<AudioSource>();
     }
 
-	public bool PlaySoundPsychicServer(AudioClip audioClip, float volume = 1.0f)
+	public void PlaySoundPsychicServer(AudioClip audioClip, float volume = 1.0f)
+	{
+		if (IsNetworkActive())
+		{
+			// call everything on both host + client
+			RPCMode callMode= RPCMode.All;
+			
+			networkView.RPC("PlaySoundPsychicServer_Internal", callMode, audioClip, volume);
+		}
+		else
+		{
+			// just play the sound
+			PlaySound(audioClip, volume);
+		}
+		
+		return;
+	}
+	
+	[RPC]
+	private void PlaySoundPsychicServer_Internal(AudioClip audioClip, float volume )
 	{
 		if (IsNetworkPsychicServer())
 		{
 			PlaySound(audioClip, volume);
-			return true;
 		}
 		
-		return false;
+		return;
 	}
 	
-	public bool PlaySoundHauntedClient(AudioClip audioClip, float volume = 1.0f)
+	public void PlaySoundHauntedClient(AudioClip audioClip, float volume = 1.0f)
+	{
+		if (IsNetworkActive())
+		{
+			// call everything on both host + client
+			RPCMode callMode= RPCMode.All;
+			
+			networkView.RPC("PlaySoundHauntedClient_Internal", callMode, audioClip, volume);
+		}
+		else
+		{
+			// just play the sound
+			PlaySound(audioClip, volume);
+		}
+		
+		return;
+	}
+	
+	[RPC]
+	private void PlaySoundHauntedClient_Internal(AudioClip audioClip, float volume )
 	{
 		if (IsNetworkHauntedClient())
 		{
 			PlaySound(audioClip, volume);
-			return true;
 		}
 		
-		return false;
+		return;
 	}
 	
     private void PlaySound( AudioClip audioClip, float volume )

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent (typeof(NetworkView))]
+//[RequireComponent (typeof(NetworkView))]
 public class NetworkManager : MonoBehaviour
 {
 	#region constants
