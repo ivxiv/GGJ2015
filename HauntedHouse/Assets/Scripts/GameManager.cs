@@ -60,6 +60,8 @@ public class GameManager : MonoBehaviour
     public Texture2D TVPuzzleIntroTexture= null;
     public Texture2D RoomOutroTexture= null;
     public Texture2D GameOverTexture= null;
+    
+    public Texture2D PsychicHotlineTexture= null;
 
     private AudioSource m_audioSource = null;
     
@@ -167,21 +169,21 @@ public class GameManager : MonoBehaviour
 		{
 			case eGameState.RoomHubIntro: RenderGameIntroGUI(string.Empty); break;
 			case eGameState.RoomHub: RenderRoomHubGUI(); break;
-			case eGameState.OuijaPuzzleIntro: RenderLoadingGUI(string.Empty); break;
+			case eGameState.OuijaPuzzleIntro: RenderLoadingGUI("Proceed to the Ouija Board..."); break;
 			case eGameState.OuijaPuzzleActive: RenderPuzzleGameGUI(); break;
-			case eGameState.OuijaPuzzleOutro: RenderOutroGUI(string.Empty); break;
-			case eGameState.CandelabraPuzzleIntro: RenderLoadingGUI(string.Empty); break;
+			case eGameState.OuijaPuzzleOutro: RenderOutroGUI("Jeepers! That ouija was creepy!"); break;
+			case eGameState.CandelabraPuzzleIntro: RenderLoadingGUI("Gaze into the candle light..."); break;
 			case eGameState.CandelabraPuzzleActive: RenderPuzzleGameGUI(); break;
-			case eGameState.CandelabraPuzzleOutro: RenderOutroGUI(string.Empty); break;
-			case eGameState.PictureSwapPuzzleIntro: RenderLoadingGUI(string.Empty); break;
+			case eGameState.CandelabraPuzzleOutro: RenderOutroGUI("Well I'll never play with fire again."); break;
+			case eGameState.PictureSwapPuzzleIntro: RenderLoadingGUI("Peruse the Family Photos..."); break;
 			case eGameState.PictureSwapPuzzleActive: RenderPuzzleGameGUI(); break;
-			case eGameState.PictureSwapPuzzleOutro: RenderOutroGUI(string.Empty); break;
-			case eGameState.DollsPuzzleIntro: RenderLoadingGUI(string.Empty); break;
+			case eGameState.PictureSwapPuzzleOutro: RenderOutroGUI("Am I really related to these people?"); break;
+			case eGameState.DollsPuzzleIntro: RenderLoadingGUI("Grandma's Creepy Doll Collection..."); break;
 			case eGameState.DollsPuzzleActive: RenderPuzzleGameGUI(); break;
 			case eGameState.DollsPuzzleOutro: RenderOutroGUI(string.Empty); break;
-			case eGameState.TVPuzzleIntro: RenderLoadingGUI(string.Empty); break;
+			case eGameState.TVPuzzleIntro: RenderLoadingGUI("Who left the TV on?"); break;
 			case eGameState.TVPuzzleActive: RenderPuzzleGameGUI(); break;
-			case eGameState.TVPuzzleOutro: RenderOutroGUI(string.Empty); break;
+			case eGameState.TVPuzzleOutro: RenderOutroGUI("Cable seems to be on the fritz..."); break;
 			case eGameState.GameOver: RenderGameOverGUI(); break;
 			default: break;
 		}
@@ -189,35 +191,65 @@ public class GameManager : MonoBehaviour
     	return;
     }
     
-	private void RenderGameIntroGUI(string message)
+    private bool RenderPsychicHotlineGUI()
     {
-		if (UseNetworking)
-		{
-			// we need to ensure that we draw the networking GUI last, so we do that here
-			NetworkManager networkManager= GetNetworkManager();
-			
-			if (null != networkManager)
+    	if (this.UseNetworking && this.IsNetworkPsychicServer())
+    	{
+			if (null != this.PsychicHotlineTexture)
 			{
-				networkManager.RenderGUI();
+				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.PsychicHotlineTexture);
+				
+				// we need to ensure that we draw the networking GUI last, so we do that here
+				NetworkManager networkManager= GetNetworkManager();
+				
+				if (null != networkManager)
+				{
+					networkManager.RenderGUI();
+				}
 			}
 			
-			// we key off of network state to advance from this point on, either as the psychic or the haunted player
-			if (this.IsNetworkActive())
+			return true;
+    	}
+    	
+    	return false;
+    }
+    
+	private void RenderGameIntroGUI(string message)
+    {
+		if (!RenderPsychicHotlineGUI())
+		{
+			if (null != this.RoomHubIntroTexture)
 			{
-				// once we have a network connection, advance to the next state
-				if (eGameState.RoomHub != this.m_gameState)
+				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.RoomHubIntroTexture);
+			}
+			
+			if (UseNetworking)
+			{
+				// we need to ensure that we draw the networking GUI last, so we do that here
+				NetworkManager networkManager= GetNetworkManager();
+				
+				if (null != networkManager)
+				{
+					networkManager.RenderGUI();
+				}
+				
+				// we key off of network state to advance from this point on, either as the psychic or the haunted player
+				if (this.IsNetworkActive())
+				{
+					// once we have a network connection, advance to the next state
+					if (eGameState.RoomHub != this.m_gameState)
+					{
+						this.SetDesiredGameState(eGameState.RoomHub);
+					}
+				}
+			}
+			else
+			{
+				// render a button to allow manual advance into the room hub
+				if (GUI.Button(new Rect(200, Screen.height - 50, 200, 30), "Enter the Home", this.UIStyle))
 				{
 					this.SetDesiredGameState(eGameState.RoomHub);
 				}
-			}
-		}
-		else
-		{
-			//GUI.DrawTexture(new Rect(0, 0, 
-			// render a button to allow manual advance into the room hub
-			if (GUI.Button(new Rect(200, 300, 200, 30), "Enter the Home", this.UIStyle))
-			{
-				this.SetDesiredGameState(eGameState.RoomHub);
 			}
 		}
 		
@@ -226,16 +258,44 @@ public class GameManager : MonoBehaviour
     
 	private void RenderRoomHubGUI()
 	{
-		// render a button for each puzzle
-		
-		if (UseNetworking)
+		if (!RenderPsychicHotlineGUI())
 		{
-			// we need to ensure that we draw the networking GUI last, so we do that here
-			NetworkManager networkManager= GetNetworkManager();
-			
-			if (null != networkManager)
+			if (null != this.RoomHubTexture)
 			{
-				networkManager.RenderGUI();
+				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.RoomHubTexture);
+			}
+			
+			// render a button for each puzzle
+			if (GUI.Button(new Rect(10, 200, 200, 30), "Ouija Board", GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.OuijaPuzzleIntro);
+			}
+			else if (GUI.Button(new Rect(10, 240, 200, 30), "Doll Collection", GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.DollsPuzzleIntro);
+			}
+			else if (GUI.Button(new Rect(10, 280, 200, 30), "Family Photos", GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.PictureSwapPuzzleIntro);
+			}
+			else if (GUI.Button(new Rect(10, 320, 200, 30), "Watch TV", GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.TVPuzzleIntro);
+			}
+			else if (GUI.Button(new Rect(10, 360, 200, 30), "Candelabra", GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.CandelabraPuzzleIntro);
+			}
+			
+			if (UseNetworking)
+			{
+				// we need to ensure that we draw the networking GUI last, so we do that here
+				NetworkManager networkManager= GetNetworkManager();
+				
+				if (null != networkManager)
+				{
+					networkManager.RenderGUI();
+				}
 			}
 		}
 		
@@ -244,14 +304,28 @@ public class GameManager : MonoBehaviour
 	
 	private void RenderLoadingGUI(string message)
 	{
-		// render a button for beginning the next puzzle
+		if (!RenderPsychicHotlineGUI())
+		{
+			// render a button for beginning the next puzzle
+			if (GUI.Button(new Rect(10, 200, 400, 30), message, GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState((eGameState)(((int)m_gameState)+1));
+			}
+		}
 		
 		return;
 	}
 	
     private void RenderOutroGUI(string message)
     {
-		// render a button to allow manual advance back to the hub
+		if (!RenderPsychicHotlineGUI())
+		{
+			// render a button to allow manual advance back to the hub
+			if (GUI.Button(new Rect(10, 200, 400, 30), message, GameManager.Instance.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.RoomHub);
+			}
+		}
 		
     	return;
     }
@@ -260,14 +334,20 @@ public class GameManager : MonoBehaviour
     
     private void RenderPuzzleGameGUI()
     {
-    	// render progress bar, timer, etc.
+		if (!RenderPsychicHotlineGUI())
+		{
+	    	// render progress bar, timer, etc.
+	    }
     	
     	return;
     }
     
     public void RenderGameOverGUI()
     {
-    	// render something glorious or something hellishly terrible
+		if (!RenderPsychicHotlineGUI())
+		{
+	    	// render something glorious or something hellishly terrible
+	    }
     	
     	return;
     }
