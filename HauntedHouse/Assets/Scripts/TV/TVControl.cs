@@ -175,6 +175,7 @@ public class TVControl : MonoBehaviour
 			staticChannelMovie.Play();
 			audio.clip= staticChannelMovie.audioClip;
 			audio.loop= true;
+			audio.volume = 0.1f;
 			audio.Play();
 		}
 		else
@@ -187,6 +188,7 @@ public class TVControl : MonoBehaviour
 				channel.movie.Play();
 				audio.clip= channel.movie.audioClip;
 				audio.loop= true;
+				audio.volume = 1.0f;
 				audio.Play();
 			}
 			else if (null != channel.texture)
