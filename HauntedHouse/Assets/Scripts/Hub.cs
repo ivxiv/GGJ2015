@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Hub : MonoBehaviour 
 {
@@ -9,6 +10,9 @@ public class Hub : MonoBehaviour
 
 	[SerializeField]
 	private GameObject[] m_completedText = new GameObject[0];
+
+	[SerializeField]
+	private GameObject m_youWin = null;
 
 	HashSet<int> m_completedPuzzles = new HashSet<int>();
 
@@ -31,11 +35,15 @@ public class Hub : MonoBehaviour
 			{
 				m_completedText[i].SetActive( m_completedPuzzles.Contains(i) );
 			}
+
+			WinCheck();
 		};
 	}
 
 	public void OnPuzzleClicked( int puzzleIndex )
 	{
+		Debug.Log (puzzleIndex);
+
 		if( m_completedPuzzles.Contains( puzzleIndex ) )
 		{
 			return;
@@ -49,6 +57,19 @@ public class Hub : MonoBehaviour
 		gameObject.SetActive (false);
 
 		m_currentPuzzle = puzzleIndex;
+	}
+
+	private void WinCheck()
+	{
+		if( m_completedPuzzles.Count == m_puzzles.Length )
+		{
+			foreach( Button puzzle in GetComponentsInChildren<Button>() )
+			{
+				puzzle.gameObject.SetActive( false );
+			}
+
+			m_youWin.SetActive(true);
+		}
 	}
 
 
