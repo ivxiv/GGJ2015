@@ -122,8 +122,7 @@ public class OuijaBoard : Puzzle
                         m_audio.volume = 0.0f;
                         m_planchette.gameObject.SetActive(false);
 
-                        GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
-						GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
+						StartCoroutine( PlayCompleteSound() );
                     }
                     else
                     {
@@ -139,6 +138,16 @@ public class OuijaBoard : Puzzle
 
         m_nearTargetAudioSource.volume = m_nearTargetTimer > 0.0f ? 1.0f : 0.0f;
     }
+
+	private IEnumerator PlayCompleteSound()
+	{
+		GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
+		GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
+
+		yield return new WaitForSeconds( GameManager.Instance.PuzzleSolvedSound.length );
+
+		GameManager.Instance.OnPuzzleComplete ();
+	}
 
     protected override void OnTimeUp()
     {

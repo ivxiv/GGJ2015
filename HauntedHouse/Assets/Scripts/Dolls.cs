@@ -185,6 +185,8 @@ public class Dolls : Puzzle
             m_dollEyes[i].SetActive(true);
         }
 
+		GameManager.Instance.OnPuzzleComplete ();
+
         yield return null;
     }
 

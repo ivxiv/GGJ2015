@@ -56,6 +56,7 @@ public class PictureSwap : Puzzle
     {
         if (CheckSolution())
         {
+			GameManager.Instance.OnPuzzleComplete();
             Debug.Log("CORRECT SOLUTION");
         }
     }

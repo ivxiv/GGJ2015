@@ -520,6 +520,12 @@ public class GameManager : MonoBehaviour
 		
 		return;
 	}
-	
+
+	public void OnPuzzleComplete()
+	{
+		Debug.Log ("PUZZLE COMPLETE!");
+		//todo
+	}
+
 	#endregion
 }
