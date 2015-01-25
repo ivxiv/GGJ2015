@@ -24,8 +24,10 @@ public class TVPuzzle : Puzzle
 	
 	#region methods
 	
-	void Start()
+	internal override void Start()
 	{
+		base.Start();
+		
 		m_lastClueTimeSeconds= Time.time;
 		m_startSecondsOnCorrectChannel= -1.0f;
 		List<int> reversedChannels= puzzleChannelSequence;
@@ -39,8 +41,10 @@ public class TVPuzzle : Puzzle
 		return;
 	}
 	
-	void Update()
+	internal override void Update()
 	{
+		base.Update();
+		
 		if (channelStack.Count() > 0)
 		{
 			TVControl controller= GetTVControl();

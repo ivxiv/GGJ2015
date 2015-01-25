@@ -23,8 +23,10 @@ public class Candelabra : Puzzle
 
     private HashSet<int> m_answer = null;
 
-    public void Start()
+    internal override void Start()
     {
+    	base.Start();
+    	
         if( m_answer == null )
         {
             m_answer = new HashSet<int>();

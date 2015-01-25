@@ -64,7 +64,7 @@ public abstract class Puzzle : MonoBehaviour
 	
 	#region methods
 	
-	void Start()
+	internal virtual void Start()
 	{
         m_timer = new Timer(m_puzzleDuration, OnTimeUp);
         m_timer.StartTimer();
@@ -72,7 +72,7 @@ public abstract class Puzzle : MonoBehaviour
 		return;
 	}
 	
-	void Update()
+	internal virtual void Update()
 	{
         m_timer.UpdateImpl(Time.smoothDeltaTime);
 

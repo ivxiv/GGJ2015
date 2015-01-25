@@ -47,7 +47,7 @@ public class OuijaBoard : Puzzle
 
     private string m_word = string.Empty;
 
-    public void Awake()
+    void Awake()
     {
         m_word = m_words[Random.Range(0, m_words.Length)];
 
@@ -64,8 +64,10 @@ public class OuijaBoard : Puzzle
         m_planchetteMovingAudioSource.volume = 0.0f;
     }
 
-    public void Update()
+    internal override void Update()
     {
+    	base.Update();
+    	
         if( Input.GetMouseButton(0) )
         {
             Camera mainCamera = GetComponentInParent<Camera>();

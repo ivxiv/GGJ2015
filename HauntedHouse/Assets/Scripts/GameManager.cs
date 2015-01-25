@@ -21,6 +21,12 @@ public class GameManager : MonoBehaviour
 
     private AudioSource m_audioSource = null;
     
+    public OuijaBoard OuijaPuzzleObject;
+    public Candelabra CandelabraPuzzleObject;
+    public PictureSwap PictureSwapPuzzleObject;
+    public Dolls DollsPuzzleObject;
+    public TVPuzzle TVPuzzleObject;
+    
     public List<AudioClip> AudioClipCatalog;
     
     #endregion

@@ -37,8 +37,10 @@ public class Dolls : Puzzle
         StartCoroutine(PulseEyes());
     }
 
-    public void Start()
+    internal override void Start()
     {
+    	base.Start();
+    	
         m_acceptInput = true;
 
         if (m_orderedGoodIndices == null || m_orderedGoodIndices == null || m_badIndices == null)
