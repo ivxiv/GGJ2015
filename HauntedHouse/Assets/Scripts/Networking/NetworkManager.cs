@@ -53,7 +53,8 @@ public class NetworkManager : MonoBehaviour
 		return;
 	}
 	
-	void OnGUI()
+	//void OnGUI() GameManager needs to control explicitly when this is done
+	public void RenderGUI()
 	{
 		int port= -1;
 		bool portIsNumeric= false;
@@ -86,12 +87,12 @@ public class NetworkManager : MonoBehaviour
 		
 		if (NetworkPeerType.Disconnected == Network.peerType)
 		{
-			GUI.Label(new Rect(10, 10, 200, 20), "Status: Disconnected");
+			GUI.Label(new Rect(10, 10, 200, 30), "Status: Disconnected", GameManager.Instance.UIStyle);
 			
-			m_hostIPString= GUI.TextField(new Rect(10, 30, 200, 20), m_hostIPString);
-			m_hostPortString= GUI.TextField (new Rect(220, 30, 100, 20), m_hostPortString);
+			m_hostIPString= GUI.TextField(new Rect(10, 40, 200, 30), m_hostIPString, GameManager.Instance.UIStyle);
+			m_hostPortString= GUI.TextField (new Rect(220, 40, 100, 30), m_hostPortString, GameManager.Instance.UIStyle);
 			
-			if (GUI.Button(new Rect(10, 50, 200, 20), "Call Psychic Hotline"))
+			if (GUI.Button(new Rect(10, 70, 200, 40), "Call Psychic Hotline", GameManager.Instance.UIStyle))
 			{
 				if (port > 0)
 				{
@@ -99,7 +100,7 @@ public class NetworkManager : MonoBehaviour
 				}
 			}
 			
-			if (GUI.Button(new Rect(10, 70, 200, 20), "Wait for Caller"))
+			if (GUI.Button(new Rect(10, 100, 200, 30), "Wait for Caller", GameManager.Instance.UIStyle))
 			{
 				if (port > 0)
 				{
@@ -111,13 +112,13 @@ public class NetworkManager : MonoBehaviour
 		}
 		else if (NetworkPeerType.Connecting == Network.peerType)
 		{
-			GUI.Label(new Rect(10, 10, 200, 20), "Calling...");
+			GUI.Label(new Rect(10, 10, 200, 30), "Calling...");
 		}
 		else if (NetworkPeerType.Client == Network.peerType)
 		{
-			GUI.Label(new Rect(10, 10, 200, 20), "Connected to Psychic Hotline!");
+			GUI.Label(new Rect(10, 10, 200, 30), "Connected to Psychic Hotline!", GameManager.Instance.UIStyle);
 			
-			if (GUI.Button(new Rect(10, 30, 200, 20), "Hang Up"))
+			if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
 			{
 				int timeoutMilliseconds= 1000;
 				
@@ -126,9 +127,9 @@ public class NetworkManager : MonoBehaviour
 		}
 		else if (NetworkPeerType.Server == Network.peerType)
 		{
-			GUI.Label(new Rect(10, 10, 200, 20), "Psychic Hotline is OPEN");
+			GUI.Label(new Rect(10, 10, 200, 30), "Psychic Hotline is OPEN", GameManager.Instance.UIStyle);
 			
-			if (GUI.Button(new Rect(10, 30, 200, 20), "Hang Up"))
+			if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
 			{
 				int timeoutMilliseconds= 1000;
 				
