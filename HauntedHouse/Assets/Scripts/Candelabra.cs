@@ -84,6 +84,14 @@ public class Candelabra : Puzzle
         }
     }
 
+    protected override void OnTimeUp()
+    {
+    }
+
+    protected override void OnComplete()
+    {
+    }
+
     private void SetCandleState( int candleIndex, bool active )
     {
         if( active && m_solutionFlame.gameObject.activeSelf )

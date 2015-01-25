@@ -137,4 +137,12 @@ public class OuijaBoard : Puzzle
 
         m_nearTargetAudioSource.volume = m_nearTargetTimer > 0.0f ? 1.0f : 0.0f;
     }
+
+    protected override void OnTimeUp()
+    {
+    }
+    
+    protected override void OnComplete()
+    {
+    }
 }

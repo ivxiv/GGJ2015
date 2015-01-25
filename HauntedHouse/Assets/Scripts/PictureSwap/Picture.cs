@@ -133,7 +133,6 @@ public class Picture : MonoBehaviour
                         toSwapPic = pic;
                         toPicDistance = newDistance;
                     }
-
                 }
             }
         }
