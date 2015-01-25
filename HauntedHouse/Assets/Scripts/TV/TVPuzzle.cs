@@ -77,9 +77,13 @@ public class TVPuzzle : Puzzle
 				Debug.Log("TV puzzle solved!!!");
 				if (null != this.victorySound)
 				{
-					GameManager.Instance.PlaySound(this.victorySound);
+					GameManager.Instance.PlaySoundPsychicServer(this.victorySound);
+					GameManager.Instance.PlaySoundHauntedClient(this.victorySound);
 				}
-				Application.OpenURL("http://i0.kym-cdn.com/photos/images/newsfeed/000/562/322/4b8.gif");
+				if (GameManager.Instance.IsNetworkHauntedClient())
+				{
+					Application.OpenURL("http://i0.kym-cdn.com/photos/images/newsfeed/000/562/322/4b8.gif");
+				}
 			}
 			else if (!onCorrectChannel)
 			{
@@ -101,7 +105,7 @@ public class TVPuzzle : Puzzle
 								{
 									if (null != clue.audio)
 									{
-										GameManager.Instance.PlaySound(clue.audio);
+										GameManager.Instance.PlaySoundPsychicServer(clue.audio);
 										break;
 									}
 								}

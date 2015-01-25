@@ -149,7 +149,7 @@ public class Dolls : Puzzle
             StartCoroutine(Shake(m_dollEyes[dollIndex], clip.length));
         }
 
-        GameManager.Instance.PlaySound(clip);
+        GameManager.Instance.PlaySoundPsychicServer(clip);
         yield return new WaitForSeconds(clip.length);
 
         if( dollIndex >= 0 )
@@ -166,7 +166,8 @@ public class Dolls : Puzzle
 
         m_acceptInput = false;
 
-        GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
+        GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
+        GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
 
         for (int i = 0; i < m_dollEyes.Length; ++i )
         {

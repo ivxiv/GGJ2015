@@ -141,7 +141,7 @@ public class Picture : MonoBehaviour
         if (toSwapPic == null)
         {
             transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
-            GameManager.Instance.PlaySound(m_chosenSound.m_clip);
+            GameManager.Instance.PlaySoundPsychicServer(m_chosenSound.m_clip);
             StartShake();
 
             string affinityString;

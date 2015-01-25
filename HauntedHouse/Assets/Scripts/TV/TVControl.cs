@@ -15,6 +15,8 @@ public class TVControl : MonoBehaviour
 	
 	public MovieTexture staticChannelMovie;
 	
+	public AudioClip channelClick;
+	
 	private int m_currentChannel;
 	public int CurrentChannel
 	{
@@ -138,6 +140,11 @@ public class TVControl : MonoBehaviour
 		else
 		{
 			error= "### failed to locate TVPuzzle object in parent!";
+		}
+		
+		if (null != this.channelClick)
+		{
+			GameManager.Instance.PlaySoundHauntedClient(this.channelClick);
 		}
 		
 		Debug.Log(string.Format("{0} channel to: {1} {2}", (direction > 0 ? "UP" : "DOWN"), m_currentChannel, (string.IsNullOrEmpty(error) ? string.Empty : error)));
