@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [RequireComponent (typeof(NetworkView))]
 public class GameManager : MonoBehaviour 
@@ -43,7 +44,9 @@ public class GameManager : MonoBehaviour
     #endregion
     
 	#region data
-	
+
+	public Action puzzleCompleteCallback = null;
+
 	public GUIStyle UIStyle;
 
     public AudioClip PuzzleSolvedSound = null;
@@ -539,7 +542,11 @@ public class GameManager : MonoBehaviour
 	public void OnPuzzleComplete()
 	{
 		Debug.Log ("PUZZLE COMPLETE!");
-		//todo
+
+		if( puzzleCompleteCallback != null )
+		{
+			puzzleCompleteCallback();
+		}
 	}
 
 	#endregion
