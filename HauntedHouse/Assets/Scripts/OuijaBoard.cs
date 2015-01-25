@@ -120,11 +120,12 @@ public class OuijaBoard : Puzzle
                         m_audio.volume = 0.0f;
                         m_planchette.gameObject.SetActive(false);
 
-                        GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
+                        GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
+						GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
                     }
                     else
                     {
-                        GameManager.Instance.PlaySound(m_successClip, 1.0f);
+                        GameManager.Instance.PlaySoundPsychicServer(m_successClip, 1.0f);
                     }
                 }
             }

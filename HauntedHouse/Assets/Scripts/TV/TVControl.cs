@@ -144,7 +144,7 @@ public class TVControl : MonoBehaviour
 		
 		if (null != this.channelClick)
 		{
-			GameManager.Instance.PlaySound(this.channelClick);
+			GameManager.Instance.PlaySoundHauntedClient(this.channelClick);
 		}
 		
 		Debug.Log(string.Format("{0} channel to: {1} {2}", (direction > 0 ? "UP" : "DOWN"), m_currentChannel, (string.IsNullOrEmpty(error) ? string.Empty : error)));

@@ -80,7 +80,7 @@ public class Dolls : Puzzle
     {
         for( int i = 0; i < numSolutionTones; ++i )
         {
-            yield return StartCoroutine(PlaySound(m_orderedGoodClips[i]));
+            yield return StartCoroutine(PlaySoundHauntedClient(m_orderedGoodClips[i]));
         }
 
         yield return null;
@@ -96,7 +96,7 @@ public class Dolls : Puzzle
         if( m_badIndices.Contains(dollIndex))
         {
             m_progress = 0;
-            StartCoroutine(PlaySound(m_badClips[Random.Range(0, m_badClips.Length)]));
+            StartCoroutine(PlaySoundPsychicServer(m_badClips[Random.Range(0, m_badClips.Length)]));
         }
         else
         {
@@ -109,35 +109,59 @@ public class Dolls : Puzzle
             
             if( m_progress < numSolutionTones )
             {
-                StartCoroutine(PlaySound(m_goodClips[orderedIndex]));
+                StartCoroutine(PlaySoundPsychicServer(m_goodClips[orderedIndex]));
             }
             else
             {
-                StartCoroutine(PlayFinalSolution(m_goodClips[orderedIndex]));
+                StartCoroutine(PlayFinalSolutionPsychicServer(m_goodClips[orderedIndex]));
+				StartCoroutine(PlayFinalSolutionHauntedClient(m_goodClips[orderedIndex]));
             }
         }
     }
 
-    private IEnumerator PlaySound( AudioClip clip )
+    private IEnumerator PlaySoundHauntedClient( AudioClip clip )
     {
-        m_acceptInput = false;
-
-        GameManager.Instance.PlaySound(clip);
-        yield return new WaitForSeconds(clip.length);
-
-        m_acceptInput = true;
+        if (GameManager.Instance.PlaySoundHauntedClient(clip))
+        {
+			m_acceptInput = false;
+	        yield return new WaitForSeconds(clip.length);
+    	    m_acceptInput = true;
+	    }
+	    yield return null;
     }
 
-    private IEnumerator PlayFinalSolution( AudioClip clip )
+    private IEnumerator PlayFinalSolutionHauntedClient( AudioClip clip )
     {
-        yield return StartCoroutine(PlaySound(clip));
-
-        m_acceptInput = false;
-
-        GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
-
+        yield return StartCoroutine(PlaySoundHauntedClient(clip));
+        
+		m_acceptInput = false;
+		
+		GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
+        
         yield return null;
     }
+    
+	private IEnumerator PlaySoundPsychicServer( AudioClip clip )
+	{
+		if (GameManager.Instance.PlaySoundPsychicServer(clip))
+		{
+			m_acceptInput = false;
+			yield return new WaitForSeconds(clip.length);
+			m_acceptInput = true;
+		}
+		yield return null;
+	}
+	
+	private IEnumerator PlayFinalSolutionPsychicServer( AudioClip clip )
+	{
+		yield return StartCoroutine(PlaySoundHauntedClient(clip));
+		
+		m_acceptInput = false;
+		
+		GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
+		
+		yield return null;
+	}
 
     private IEnumerator PulseEyes()
     {

@@ -124,7 +124,7 @@ public class Candelabra : Puzzle
             button.enabled = false;
         }
 
-        GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
+        GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
 
         float timer = 0.0f;
 
