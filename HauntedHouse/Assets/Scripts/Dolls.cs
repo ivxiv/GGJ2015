@@ -12,11 +12,14 @@ public class Dolls : Puzzle
     [SerializeField]
     private AudioClip[] m_badClips = new AudioClip[0];
 
-    //[SerializeField]
-    //private GameObject[] m_dollEyes = new GameObject[0];
+    [SerializeField]
+    private GameObject[] m_dollEyes = new GameObject[0];
 
     [SerializeField]
     private GameObject m_solutionDollEyes = null;
+
+    [SerializeField]
+    private float m_shakeMagnitude = 0.1f;
 
     const int numDollHeads = 9;
     const int numSolutionTones = 2;
@@ -28,7 +31,7 @@ public class Dolls : Puzzle
     private bool m_acceptInput = true;
     private int m_progress = 0;
 
-    public void OnEnabled()
+    public void OnEnable()
     {
         m_acceptInput = true;
         StartCoroutine(PulseEyes());
@@ -78,9 +81,27 @@ public class Dolls : Puzzle
 
     private IEnumerator PlaySolution()
     {
-        for( int i = 0; i < numSolutionTones; ++i )
+        float totalTime = 0.0f;
+
+        foreach( AudioClip clip in m_orderedGoodClips )
         {
-            yield return StartCoroutine(PlaySound(m_orderedGoodClips[i]));
+            totalTime += clip.length;
+        }
+
+        for (int i = 0; i < m_dollEyes.Length; ++i)
+        {
+            m_dollEyes[i].SetActive(true);
+            StartCoroutine(Shake(m_dollEyes[i], totalTime));
+        }
+
+        for (int i = 0; i < numSolutionTones; ++i)
+        {
+            yield return StartCoroutine(PlaySound(m_orderedGoodClips[i], -1));
+        }
+
+        for (int i = 0; i < m_dollEyes.Length; ++i)
+        {
+            m_dollEyes[i].SetActive(false);
         }
 
         yield return null;
@@ -96,7 +117,7 @@ public class Dolls : Puzzle
         if( m_badIndices.Contains(dollIndex))
         {
             m_progress = 0;
-            StartCoroutine(PlaySound(m_badClips[Random.Range(0, m_badClips.Length)]));
+            StartCoroutine(PlaySound(m_badClips[Random.Range(0, m_badClips.Length)], dollIndex));
         }
         else
         {
@@ -109,32 +130,49 @@ public class Dolls : Puzzle
             
             if( m_progress < numSolutionTones )
             {
-                StartCoroutine(PlaySound(m_goodClips[orderedIndex]));
+                StartCoroutine(PlaySound(m_goodClips[orderedIndex], dollIndex));
             }
             else
             {
-                StartCoroutine(PlayFinalSolution(m_goodClips[orderedIndex]));
+                StartCoroutine(PlayFinalSolution(m_goodClips[orderedIndex], dollIndex));
             }
         }
     }
 
-    private IEnumerator PlaySound( AudioClip clip )
+    private IEnumerator PlaySound( AudioClip clip, int dollIndex )
     {
         m_acceptInput = false;
+
+        if( dollIndex >= 0 )
+        {
+            m_dollEyes[dollIndex].SetActive(true);
+            StartCoroutine(Shake(m_dollEyes[dollIndex], clip.length));
+        }
 
         GameManager.Instance.PlaySound(clip);
         yield return new WaitForSeconds(clip.length);
 
+        if( dollIndex >= 0 )
+        {
+            m_dollEyes[dollIndex].SetActive(false);
+        }
+
         m_acceptInput = true;
     }
 
-    private IEnumerator PlayFinalSolution( AudioClip clip )
+    private IEnumerator PlayFinalSolution( AudioClip clip, int dollIndex )
     {
-        yield return StartCoroutine(PlaySound(clip));
+        yield return StartCoroutine(PlaySound(clip, dollIndex));
 
         m_acceptInput = false;
 
         GameManager.Instance.PlaySound(GameManager.Instance.PuzzleSolvedSound);
+
+        for (int i = 0; i < m_dollEyes.Length; ++i )
+        {
+            yield return new WaitForSeconds(GameManager.Instance.PuzzleSolvedSound.length / m_dollEyes.Length);
+            m_dollEyes[i].SetActive(true);
+        }
 
         yield return null;
     }
@@ -164,7 +202,9 @@ public class Dolls : Puzzle
                 direction = !direction;
             }
 
-            float t = Mathf.Clamp01(timer / interval);
+            timer = Mathf.Clamp(timer, 0.0f, interval);
+
+            float t = Mathf.Clamp01( 0.5f + (timer / interval) * 0.5f );
 
             Color color = Color.white;
             color.a = t;
@@ -173,6 +213,27 @@ public class Dolls : Puzzle
             {
                 image.color = color;
             }
+
+            yield return new WaitForEndOfFrame();
         }
+    }
+
+    private IEnumerator Shake( GameObject obj, float time )
+    {
+        Vector3 originalPosition = obj.transform.position;
+
+        while( time > 0.0f )
+        {
+            Vector2 random = Random.insideUnitCircle * m_shakeMagnitude;
+            obj.transform.position = originalPosition + new Vector3(random.x, random.y, 0);
+
+            time -= Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        obj.transform.position = originalPosition;
+
+        yield return null;
     }
 }
