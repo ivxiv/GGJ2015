@@ -63,8 +63,6 @@ public class Dolls : Puzzle
                 int randomDollIndex = goodIndices[Random.Range(0, goodIndices.Count)];
                 m_orderedGoodIndices.Add(randomDollIndex);
                 goodIndices.Remove(randomDollIndex);
-
-				Debug.Log( randomDollIndex );
             }
 
             m_badIndices = new HashSet<int>(goodIndices);
@@ -108,7 +106,6 @@ public class Dolls : Puzzle
 
         for (int i = 0; i < numSolutionTones; ++i)
         {
-			Debug.Log( m_orderedGoodClips[i].name );
             yield return StartCoroutine(PlaySound(m_orderedGoodClips[i], -1));
         }
 
@@ -187,6 +184,8 @@ public class Dolls : Puzzle
             yield return new WaitForSeconds(GameManager.Instance.PuzzleSolvedSound.length / m_dollEyes.Length);
             m_dollEyes[i].SetActive(true);
         }
+
+		GameManager.Instance.OnPuzzleComplete ();
 
         yield return null;
     }

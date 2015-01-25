@@ -166,6 +166,8 @@ public class Candelabra : Puzzle
 
         m_solutionFlame.gameObject.SetActive(true);
 
+		GameManager.Instance.OnPuzzleComplete ();
+
         yield return null;
     }
 }
