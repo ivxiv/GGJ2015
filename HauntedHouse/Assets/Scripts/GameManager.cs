@@ -47,6 +47,16 @@ public class GameManager : MonoBehaviour
 	public GUIStyle UIStyle;
 
     public AudioClip PuzzleSolvedSound = null;
+    
+    public Texture2D RoomHubIntroTexture= null;
+    public Texture2D RoomHubTexture= null;
+    public Texture2D OuijaPuzzleIntroTexture= null;
+    public Texture2D CandelabraPuzzleIntroTexture= null;
+    public Texture2D PictureSwapPuzzleIntroTexture= null;
+    public Texture2D DollsPuzzleIntroTexture= null;
+    public Texture2D TVPuzzleIntroTexture= null;
+    public Texture2D RoomOutroTexture= null;
+    public Texture2D GameOverTexture= null;
 
     private AudioSource m_audioSource = null;
     
@@ -200,7 +210,12 @@ public class GameManager : MonoBehaviour
 		}
 		else
 		{
-			// render a button to allow manual advance into the
+			//GUI.DrawTexture(new Rect(0, 0, 
+			// render a button to allow manual advance into the room hub
+			if (GUI.Button(new Rect(200, 300, 200, 30), "Enter the Home", this.UIStyle))
+			{
+				this.SetDesiredGameState(eGameState.RoomHub);
+			}
 		}
 		
     	return;
