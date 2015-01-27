@@ -60,8 +60,6 @@ public class Hub : MonoBehaviour
 
 	public void OnPuzzleClicked( int puzzleIndex )
 	{
-		Debug.Log (puzzleIndex);
-
 		if( m_completedPuzzles.Contains( puzzleIndex ) )
 		{
 			return;
@@ -92,7 +90,9 @@ public class Hub : MonoBehaviour
 	{
 		if( m_completedPuzzles.Count == m_puzzles.Length )
 		{
-			foreach( Button puzzle in GetComponentsInChildren<Button>() )
+            Button[] puzzles = GetComponentsInChildren<Button>();
+
+            foreach (Button puzzle in puzzles)
 			{
 				puzzle.gameObject.SetActive( false );
 			}

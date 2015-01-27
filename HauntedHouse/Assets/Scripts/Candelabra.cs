@@ -82,7 +82,14 @@ public class Candelabra : Puzzle
 
         for (int i = 0; i < m_audioSources.Length; ++i)
         {
-            m_audioSources[i].volume = (m_answer.Contains(i) && active) ? 1.0f : 0.0f;
+			float candleVolume= (m_answer.Contains(i) && active) ? 1.0f : 0.0f;
+			
+			if (GameManager.Instance.UseNetworking && !GameManager.Instance.IsNetworkPsychicServer())
+			{
+				candleVolume = 0.0f;
+			}
+			
+            m_audioSources[i].volume = candleVolume;
         }
     }
 
@@ -102,7 +109,15 @@ public class Candelabra : Puzzle
         }
 
         m_flames[candleIndex].gameObject.SetActive(active);
-        m_audioSources[candleIndex].volume = active ? 1.0f : 0.0f;
+        
+        float candleVolume= active ? 1.0f : 0.0f;
+        
+		if (GameManager.Instance.UseNetworking && !GameManager.Instance.IsNetworkPsychicServer())
+		{
+			candleVolume = 0.0f;
+		}
+        
+        m_audioSources[candleIndex].volume = candleVolume;
 
         //auto select correct answer
         if (CheckSolution())
@@ -135,6 +150,7 @@ public class Candelabra : Puzzle
         }
 
         GameManager.Instance.PlaySoundHauntedClient(GameManager.Instance.PuzzleSolvedSound);
+		GameManager.Instance.PlaySoundPsychicServer(GameManager.Instance.PuzzleSolvedSound);
 
         float timer = 0.0f;
 
@@ -166,7 +182,7 @@ public class Candelabra : Puzzle
 
         m_solutionFlame.gameObject.SetActive(true);
 
-		GameManager.Instance.OnPuzzleComplete ();
+		GameManager.Instance.OnPuzzleComplete();
 
         yield return null;
     }

@@ -20,6 +20,8 @@ public class TVPuzzle : Puzzle
 	public float secondsToWatchCorrectChannel= 3.0f;
 	private float m_startSecondsOnCorrectChannel;
 	
+	private bool m_victorySoundPlaying= false;
+	
 	#endregion
 	
 	#region methods
@@ -51,6 +53,8 @@ public class TVPuzzle : Puzzle
 			int currentChannel= (null != controller) ? controller.CurrentChannel : -1;
 			bool onCorrectChannel= (currentChannel == channelStack.Peek());
 			float now= Time.time;
+			bool channelCorrect= false;
+			bool puzzleComplete= false;
 			
 			// did we get a channel correct?
 			if (onCorrectChannel)
@@ -66,28 +70,20 @@ public class TVPuzzle : Puzzle
 					channelStack.Pop();
 					m_lastClueTimeSeconds= 0.0f;
 					
-					if (null != controller)
-					{
-						controller.InhibitInputForSeconds((null != this.victorySound) ? this.victorySound.length : 3.0f);
-					}
-					
 					m_startSecondsOnCorrectChannel= -1.0f;
+					channelCorrect= true;
 					Debug.Log("CORRECT!");
 				}
+			}
+			else
+			{
+				m_startSecondsOnCorrectChannel= -1.0f;
 			}
 			
 			if (0 == channelStack.Count())
 			{
+				puzzleComplete= true;
 				Debug.Log("TV puzzle solved!!!");
-				if (null != this.victorySound)
-				{
-					GameManager.Instance.PlaySoundPsychicServer(this.victorySound);
-					GameManager.Instance.PlaySoundHauntedClient(this.victorySound);
-				}
-				if (GameManager.Instance.IsNetworkHauntedClient())
-				{
-					Application.OpenURL("http://i0.kym-cdn.com/photos/images/newsfeed/000/562/322/4b8.gif");
-				}
 			}
 			else if (!onCorrectChannel)
 			{
@@ -107,7 +103,7 @@ public class TVPuzzle : Puzzle
 								// TODO add multiple clues per channel, pick one from random
 								if (channelValue == nextClueChannel)
 								{
-									if (null != clue.audio)
+									if (null != clue.audio && !m_victorySoundPlaying)
 									{
 										GameManager.Instance.PlaySoundPsychicServer(clue.audio);
 										break;
@@ -123,9 +119,42 @@ public class TVPuzzle : Puzzle
 					m_lastClueTimeSeconds= now;
 				}
 			}
+			
+			if (channelCorrect || puzzleComplete)
+			{
+				StartCoroutine(PlayCompleteSound(puzzleComplete));
+			}
 		}
 		
 		return;
+	}
+	
+	private IEnumerator PlayCompleteSound(bool puzzleFinished)
+	{
+		TVControl controller= GetTVControl();
+		float durationSeconds= (null != this.victorySound) ? this.victorySound.length : 3.0f;
+		
+		if (null != controller)
+		{
+			controller.InhibitInputForSeconds(durationSeconds);
+		}
+		
+		if (null != this.victorySound)
+		{
+			m_victorySoundPlaying= true;
+			GameManager.Instance.PlaySoundPsychicServer(this.victorySound);
+			GameManager.Instance.PlaySoundHauntedClient(this.victorySound);
+		}
+		
+		yield return new WaitForSeconds(durationSeconds);
+		m_victorySoundPlaying= false;
+		
+		if (puzzleFinished)
+		{
+			GameManager.Instance.OnPuzzleComplete();
+		}
+		
+		yield break;
 	}
 
     protected override void OnTimeUp()

@@ -85,52 +85,68 @@ public class NetworkManager : MonoBehaviour
 			}
 		}
 		
-		if (NetworkPeerType.Disconnected == Network.peerType)
+		// provide a toggle for networking
+		GameManager.Instance.UseNetworking= GUI.Toggle(new Rect(Screen.width - 200, 10, 180, 30), GameManager.Instance.UseNetworking, "Use Networking", GameManager.Instance.UIStyle);
+		
+		if (GameManager.Instance.UseNetworking)
 		{
-			GUI.Label(new Rect(10, 10, 300, 30), "Status: Disconnected", GameManager.Instance.UIStyle);
-			
-			m_hostIPString= GUI.TextField(new Rect(10, 40, 200, 30), m_hostIPString, GameManager.Instance.UIStyle);
-			m_hostPortString= GUI.TextField (new Rect(220, 40, 100, 30), m_hostPortString, GameManager.Instance.UIStyle);
-			
-			if (GUI.Button(new Rect(10, 70, 200, 30), "Call Psychic Hotline", GameManager.Instance.UIStyle))
+			if (NetworkPeerType.Disconnected == Network.peerType)
 			{
-				if (port > 0)
-				{
-					Network.Connect(m_hostIPString, port);
-				}
-			}
-			
-			if (GUI.Button(new Rect(10, 100, 200, 30), "Wait for Caller", GameManager.Instance.UIStyle))
-			{
-				if (port > 0)
-				{
-					const int kMaximumConnections= 2; // ourself + 1 remote client
-					
-					Network.InitializeServer(kMaximumConnections, port, this.UseNAT);
-				}
-			}
-		}
-		else if (NetworkPeerType.Connecting == Network.peerType)
-		{
-			GUI.Label(new Rect(10, 10, 300, 30), "Calling...");
-		}
-		else if (NetworkPeerType.Client == Network.peerType)
-		{
-			GUI.Label(new Rect(10, 10, 200, 30), "Connected to Psychic Hotline!", GameManager.Instance.UIStyle);
-			
-			if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
-			{
-				int timeoutMilliseconds= 1000;
+				GUI.Label(new Rect(10, 10, 300, 30), "Status: Disconnected", GameManager.Instance.UIStyle);
 				
-				Network.Disconnect(timeoutMilliseconds);
+				m_hostIPString= GUI.TextField(new Rect(10, 40, 200, 30), m_hostIPString, GameManager.Instance.UIStyle);
+				m_hostPortString= GUI.TextField (new Rect(220, 40, 100, 30), m_hostPortString, GameManager.Instance.UIStyle);
+				
+				if (GUI.Button(new Rect(10, 70, 200, 30), "Call Psychic Hotline", GameManager.Instance.UIStyle))
+				{
+					if (port > 0)
+					{
+						Network.Connect(m_hostIPString, port);
+					}
+				}
+				
+				if (GUI.Button(new Rect(10, 100, 200, 30), "Wait for Caller", GameManager.Instance.UIStyle))
+				{
+					if (port > 0)
+					{
+						const int kMaximumConnections= 2; // ourself + 1 remote client
+						
+						Network.InitializeServer(kMaximumConnections, port, this.UseNAT);
+					}
+				}
+			}
+			else if (NetworkPeerType.Connecting == Network.peerType)
+			{
+				GUI.Label(new Rect(10, 10, 300, 30), "Calling...");
+			}
+			else if (NetworkPeerType.Client == Network.peerType)
+			{
+				GUI.Label(new Rect(10, 10, 200, 30), "Connected to Psychic Hotline!", GameManager.Instance.UIStyle);
+				
+				if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
+				{
+					int timeoutMilliseconds= 1000;
+					
+					Network.Disconnect(timeoutMilliseconds);
+				}
+			}
+			else if (NetworkPeerType.Server == Network.peerType)
+			{
+				GUI.Label(new Rect(10, 10, 300, 30), "Psychic Hotline is OPEN", GameManager.Instance.UIStyle);
+				
+				if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
+				{
+					int timeoutMilliseconds= 1000;
+					
+					Network.Disconnect(timeoutMilliseconds);
+				}
 			}
 		}
-		else if (NetworkPeerType.Server == Network.peerType)
+		else // networking turned off
 		{
-			GUI.Label(new Rect(10, 10, 300, 30), "Psychic Hotline is OPEN", GameManager.Instance.UIStyle);
-			
-			if (GUI.Button(new Rect(10, 40, 200, 30), "Hang Up", GameManager.Instance.UIStyle))
+			if (NetworkPeerType.Disconnected != Network.peerType)
 			{
+				// if networking been turned off, shut 'er down
 				int timeoutMilliseconds= 1000;
 				
 				Network.Disconnect(timeoutMilliseconds);

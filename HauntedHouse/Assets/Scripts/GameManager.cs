@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
 				}
     		}
     	}
-    	
+
     	return;
     }
     
@@ -198,14 +198,14 @@ public class GameManager : MonoBehaviour
 			if (null != this.PsychicHotlineTexture)
 			{
 				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.PsychicHotlineTexture);
-				
-				// we need to ensure that we draw the networking GUI last, so we do that here
-				NetworkManager networkManager= GetNetworkManager();
-				
-				if (null != networkManager)
-				{
-					networkManager.RenderGUI();
-				}
+			}
+			
+			// we need to ensure that we draw the networking GUI last, so we do that here
+			NetworkManager networkManager= GetNetworkManager();
+			
+			if (null != networkManager)
+			{
+				networkManager.RenderGUI();
 			}
 			
 			return true;
@@ -223,24 +223,21 @@ public class GameManager : MonoBehaviour
 				GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), this.RoomHubIntroTexture);
 			}
 			
-			if (UseNetworking)
+			// we need to ensure that we draw the networking GUI last, so we do that here
+			NetworkManager networkManager= GetNetworkManager();
+			
+			if (null != networkManager)
 			{
-				// we need to ensure that we draw the networking GUI last, so we do that here
-				NetworkManager networkManager= GetNetworkManager();
-				
-				if (null != networkManager)
+				networkManager.RenderGUI();
+			}
+			
+			// we key off of network state to advance from this point on, either as the psychic or the haunted player
+			if (this.IsNetworkActive())
+			{
+				// once we have a network connection, advance to the next state
+				if (eGameState.RoomHub != this.m_gameState)
 				{
-					networkManager.RenderGUI();
-				}
-				
-				// we key off of network state to advance from this point on, either as the psychic or the haunted player
-				if (this.IsNetworkActive())
-				{
-					// once we have a network connection, advance to the next state
-					if (eGameState.RoomHub != this.m_gameState)
-					{
-						this.SetDesiredGameState(eGameState.RoomHub);
-					}
+					this.SetDesiredGameState(eGameState.RoomHub);
 				}
 			}
 			else
@@ -395,10 +392,10 @@ public class GameManager : MonoBehaviour
 		return null;
     }
     
-    private AudioClip LocateAudioClipByName(string audioClipName)
-    {
-    	string testName= audioClipName.ToLowerInvariant();
-    	
+	private AudioClip LocateAudioClipByName(string audioClipName)
+	{
+		string testName= audioClipName.ToLowerInvariant();
+		
 		foreach (AudioClip clip in AudioClipCatalog)
 		{
 			if ((null != clip) && testName.Equals(clip.name.ToLowerInvariant()))
@@ -408,7 +405,7 @@ public class GameManager : MonoBehaviour
 		}
 		
 		return null;
-    }
+	}
     
     void LoadPuzzleRoom(GameObject roomObject)
     {
@@ -432,23 +429,31 @@ public class GameManager : MonoBehaviour
 	[RPC]
     private void LoadPuzzleRoom_Internal(string roomObjectName)
     {
-		GameObject puzzleRoom= GetPuzzleRoomObjectByName(roomObjectName);
-		
-		if (null != puzzleRoom)
-		{
-			if (null != OuijaPuzzleObject) OuijaPuzzleObject.gameObject.SetActive(false);
-			if (null != CandelabraPuzzleObject) CandelabraPuzzleObject.gameObject.SetActive(false);
-			if (null != PictureSwapPuzzleObject) PictureSwapPuzzleObject.gameObject.SetActive(false);
-			if (null != DollsPuzzleObject) DollsPuzzleObject.gameObject.SetActive(false);
-			if (null != TVPuzzleObject) TVPuzzleObject.gameObject.SetActive(false);
-			if (null != PuzzleHubObject) PuzzleHubObject.gameObject.SetActive(false);
-			
-			puzzleRoom.SetActive(true);
-			Debug.Log(string.Format("Room '{0}' is now ACTIVE", roomObjectName));
-		}
+    	// only the client activates a new room; the psychic server sits at the hub
+    	if (this.UseNetworking && IsNetworkPsychicServer())
+    	{
+    		// do nothing
+    	}
 		else
 		{
-			Debug.LogWarning(string.Format("failed to locate puzzle room '{0}'", roomObjectName));
+			GameObject puzzleRoom= GetPuzzleRoomObjectByName(roomObjectName);
+			
+			if (null != puzzleRoom)
+			{
+				if (null != OuijaPuzzleObject) OuijaPuzzleObject.gameObject.SetActive(false);
+				if (null != CandelabraPuzzleObject) CandelabraPuzzleObject.gameObject.SetActive(false);
+				if (null != PictureSwapPuzzleObject) PictureSwapPuzzleObject.gameObject.SetActive(false);
+				if (null != DollsPuzzleObject) DollsPuzzleObject.gameObject.SetActive(false);
+				if (null != TVPuzzleObject) TVPuzzleObject.gameObject.SetActive(false);
+				if (null != PuzzleHubObject) PuzzleHubObject.gameObject.SetActive(false);
+				
+				puzzleRoom.SetActive(true);
+				Debug.Log(string.Format("Room '{0}' is now ACTIVE", roomObjectName));
+			}
+			else
+			{
+				Debug.LogWarning(string.Format("failed to locate puzzle room '{0}'", roomObjectName));
+			}
 		}
 		
     	return;

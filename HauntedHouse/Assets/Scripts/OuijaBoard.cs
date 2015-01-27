@@ -84,8 +84,15 @@ public class OuijaBoard : Puzzle
             {
                 controlDirection.Normalize();
             }
+            
+			float planchetteVolume= controlDirection.magnitude > 0.0f ? 1.0f : 0.0f;
+			
+			if (GameManager.Instance.UseNetworking && !GameManager.Instance.IsNetworkPsychicServer())
+			{
+				planchetteVolume = 0.0f;
+			}
 
-            m_planchetteMovingAudioSource.volume = controlDirection.magnitude > 0.0f ? 1.0f : 0.0f;
+			m_planchetteMovingAudioSource.volume = planchetteVolume;
 
             m_planchette.transform.position = m_planchette.transform.position + controlDirection * m_planchetteSpeed;
         }
