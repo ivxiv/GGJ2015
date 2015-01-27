@@ -14,7 +14,7 @@ public class TVPuzzle : Puzzle
 	
 	public AudioClip victorySound;
 	
-	public float secondsBetweenClues= 5.0f;
+	public float secondsBetweenClues= 3.0f;
 	private float m_lastClueTimeSeconds;
 	
 	public float secondsToWatchCorrectChannel= 3.0f;
@@ -46,6 +46,12 @@ public class TVPuzzle : Puzzle
 	internal override void Update()
 	{
 		base.Update();
+		
+		if (GameManager.Instance.UseNetworking && GameManager.Instance.IsNetworkPsychicServer())
+		{
+			// no TV for the psychic
+			return;
+		}
 		
 		if (channelStack.Count() > 0)
 		{

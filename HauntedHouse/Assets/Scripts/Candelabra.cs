@@ -52,6 +52,38 @@ public class Candelabra : Puzzle
                 remainingSources[index].Play();
             }
         }
+        
+		for (int i= 0; i < m_audioSources.Length; ++i)
+		{
+			GameManager.Instance.SetNetworkedVolume(i, 0.0f);
+		}
+		
+		return;
+    }
+    
+	private float AdjustPlaybackVolumeForNetwork(float volume)
+	{
+		if (GameManager.Instance.UseNetworking)
+		{
+			if (GameManager.Instance.IsNetworkHauntedClient())
+			{
+				return 0.0f;
+			}
+		}
+		
+		return volume;
+	}
+    
+    internal override void Update()
+    {
+    	base.Update();
+    	
+    	for (int i= 0; i < m_audioSources.Length; ++i)
+    	{
+			m_audioSources[i].volume= AdjustPlaybackVolumeForNetwork(GameManager.Instance.NetworkedVolume[i]);
+    	}
+    	
+    	return;
     }
 
     public void OnButton( int candleIndex )
@@ -84,12 +116,7 @@ public class Candelabra : Puzzle
         {
 			float candleVolume= (m_answer.Contains(i) && active) ? 1.0f : 0.0f;
 			
-			if (GameManager.Instance.UseNetworking && !GameManager.Instance.IsNetworkPsychicServer())
-			{
-				candleVolume = 0.0f;
-			}
-			
-            m_audioSources[i].volume = candleVolume;
+			GameManager.Instance.SetNetworkedVolume(i, candleVolume);
         }
     }
 
@@ -112,12 +139,7 @@ public class Candelabra : Puzzle
         
         float candleVolume= active ? 1.0f : 0.0f;
         
-		if (GameManager.Instance.UseNetworking && !GameManager.Instance.IsNetworkPsychicServer())
-		{
-			candleVolume = 0.0f;
-		}
-        
-        m_audioSources[candleIndex].volume = candleVolume;
+		GameManager.Instance.SetNetworkedVolume(candleIndex, candleVolume);
 
         //auto select correct answer
         if (CheckSolution())
@@ -177,7 +199,7 @@ public class Candelabra : Puzzle
         for (int i = 0; i < m_flames.Length; ++i )
         {
             m_flames[i].gameObject.SetActive(true);
-            m_audioSources[i].volume = 0.0f;
+            GameManager.Instance.SetNetworkedVolume(i, 0.0f);
         }
 
         m_solutionFlame.gameObject.SetActive(true);

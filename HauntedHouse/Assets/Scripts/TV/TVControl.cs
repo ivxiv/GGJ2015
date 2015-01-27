@@ -43,6 +43,12 @@ public class TVControl : MonoBehaviour
 	
 	void OnGUI()
 	{
+		if (GameManager.Instance.UseNetworking && GameManager.Instance.IsNetworkPsychicServer())
+		{
+			// no TV for the psychic
+			return;
+		}
+		
 		Transform downChannel= this.transform.FindChild("down_channel");
 		Transform upChannel= this.transform.FindChild("up_channel");
 		Transform channelLabel= this.transform.FindChild("channel_label");
@@ -154,6 +160,12 @@ public class TVControl : MonoBehaviour
 	
 	private void ChangeToChannel(TVChannel channel)
 	{
+		if (GameManager.Instance.UseNetworking && GameManager.Instance.IsNetworkPsychicServer())
+		{
+			// no TV for the psychic
+			return;
+		}
+		
 		MovieTexture currentMovie= (renderer.material.mainTexture as MovieTexture);
 		
 		// stop anything that is currently playing

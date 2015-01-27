@@ -78,6 +78,8 @@ public class GameManager : MonoBehaviour
     public TVPuzzle TVPuzzleObject;
     public GameObject PuzzleHubObject;
     
+	public float[] NetworkedVolume= new float[10] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+    
     public List<AudioClip> AudioClipCatalog;
     
     #endregion
@@ -351,6 +353,36 @@ public class GameManager : MonoBehaviour
     	return;
     }
     
+    public void SetNetworkedVolume(int volumeIndex, float value)
+    {
+		if (this.UseNetworking && IsNetworkActive())
+		{
+	    	// only the clinet gets to set networked volumes
+			if (IsNetworkHauntedClient())
+			{
+				// call everything on both host + client
+				RPCMode callMode= RPCMode.All;
+				
+				networkView.RPC("SetNetworkedVolume_Internal", callMode, volumeIndex, value);
+			}
+		}
+		else
+		{
+			// just set the volume
+			SetNetworkedVolume_Internal(volumeIndex, value);
+		}
+		
+		return;
+    }
+    
+    [RPC]
+	private void SetNetworkedVolume_Internal(int volumeIndex, float value)
+	{
+		this.NetworkedVolume[volumeIndex]= value;
+		
+		return;
+	}
+    
     public void SetDesiredGameState(eGameState newState)
     {
 		if (IsNetworkActive())
@@ -429,31 +461,23 @@ public class GameManager : MonoBehaviour
 	[RPC]
     private void LoadPuzzleRoom_Internal(string roomObjectName)
     {
-    	// only the client activates a new room; the psychic server sits at the hub
-    	if (this.UseNetworking && IsNetworkPsychicServer())
-    	{
-    		// do nothing
-    	}
+    	GameObject puzzleRoom= GetPuzzleRoomObjectByName(roomObjectName);
+		
+		if (null != puzzleRoom)
+		{
+			if (null != OuijaPuzzleObject) OuijaPuzzleObject.gameObject.SetActive(false);
+			if (null != CandelabraPuzzleObject) CandelabraPuzzleObject.gameObject.SetActive(false);
+			if (null != PictureSwapPuzzleObject) PictureSwapPuzzleObject.gameObject.SetActive(false);
+			if (null != DollsPuzzleObject) DollsPuzzleObject.gameObject.SetActive(false);
+			if (null != TVPuzzleObject) TVPuzzleObject.gameObject.SetActive(false);
+			if (null != PuzzleHubObject) PuzzleHubObject.gameObject.SetActive(false);
+			
+			puzzleRoom.SetActive(true);
+			Debug.Log(string.Format("Room '{0}' is now ACTIVE", roomObjectName));
+		}
 		else
 		{
-			GameObject puzzleRoom= GetPuzzleRoomObjectByName(roomObjectName);
-			
-			if (null != puzzleRoom)
-			{
-				if (null != OuijaPuzzleObject) OuijaPuzzleObject.gameObject.SetActive(false);
-				if (null != CandelabraPuzzleObject) CandelabraPuzzleObject.gameObject.SetActive(false);
-				if (null != PictureSwapPuzzleObject) PictureSwapPuzzleObject.gameObject.SetActive(false);
-				if (null != DollsPuzzleObject) DollsPuzzleObject.gameObject.SetActive(false);
-				if (null != TVPuzzleObject) TVPuzzleObject.gameObject.SetActive(false);
-				if (null != PuzzleHubObject) PuzzleHubObject.gameObject.SetActive(false);
-				
-				puzzleRoom.SetActive(true);
-				Debug.Log(string.Format("Room '{0}' is now ACTIVE", roomObjectName));
-			}
-			else
-			{
-				Debug.LogWarning(string.Format("failed to locate puzzle room '{0}'", roomObjectName));
-			}
+			Debug.LogWarning(string.Format("failed to locate puzzle room '{0}'", roomObjectName));
 		}
 		
     	return;

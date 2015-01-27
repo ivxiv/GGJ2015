@@ -46,6 +46,10 @@ public class OuijaBoard : Puzzle
     private float m_nearTargetTimer = 0.0f;
 
     private string m_word = string.Empty;
+    
+    private const int kPlanchetteMovingNetworkedVolumeIndex= 0;
+    private const int kOuijaNetworkedVolumeIndex= 1;
+    private const int kNearTargetNetworkedVolumeIndex= 2;
 
     void Awake()
     {
@@ -63,10 +67,38 @@ public class OuijaBoard : Puzzle
         m_nearTargetAudioSource.volume = 0.0f;
         m_planchetteMovingAudioSource.volume = 0.0f;
     }
+    
+    internal override void Start()
+    {
+    	base.Start();
+    	
+		GameManager.Instance.SetNetworkedVolume(kPlanchetteMovingNetworkedVolumeIndex, 0.0f);
+		GameManager.Instance.SetNetworkedVolume(kOuijaNetworkedVolumeIndex, 0.0f);
+		GameManager.Instance.SetNetworkedVolume(kNearTargetNetworkedVolumeIndex, 0.0f);
+		
+		return;
+    }
+    
+    private float AdjustPlaybackVolumeForNetwork(float volume)
+    {
+    	if (GameManager.Instance.UseNetworking)
+    	{
+    		if (GameManager.Instance.IsNetworkHauntedClient())
+    		{
+    			return 0.0f;
+    		}
+    	}
+    	
+    	return volume;
+    }
 
     internal override void Update()
     {
     	base.Update();
+    	
+		m_planchetteMovingAudioSource.volume= AdjustPlaybackVolumeForNetwork(GameManager.Instance.NetworkedVolume[kPlanchetteMovingNetworkedVolumeIndex]);
+		m_audio.volume= AdjustPlaybackVolumeForNetwork(GameManager.Instance.NetworkedVolume[kOuijaNetworkedVolumeIndex]);
+		m_nearTargetAudioSource.volume= AdjustPlaybackVolumeForNetwork(GameManager.Instance.NetworkedVolume[kNearTargetNetworkedVolumeIndex]);
     	
         if( Input.GetMouseButton(0) )
         {
@@ -91,14 +123,14 @@ public class OuijaBoard : Puzzle
 			{
 				planchetteVolume = 0.0f;
 			}
-
-			m_planchetteMovingAudioSource.volume = planchetteVolume;
+			
+			GameManager.Instance.SetNetworkedVolume(kPlanchetteMovingNetworkedVolumeIndex, planchetteVolume);
 
             m_planchette.transform.position = m_planchette.transform.position + controlDirection * m_planchetteSpeed;
         }
         else
         {
-            m_planchetteMovingAudioSource.volume = 0.0f;
+			GameManager.Instance.SetNetworkedVolume(kPlanchetteMovingNetworkedVolumeIndex, 0.0f);
         }
 
         if( m_index < m_word.Length )
@@ -110,8 +142,9 @@ public class OuijaBoard : Puzzle
 
             float t = Mathf.Clamp01(1.0f - (distance - 1) / m_maxDistance);
             t = t * t * t * t;
-            m_audio.volume = t;
-
+            
+			GameManager.Instance.SetNetworkedVolume(kOuijaNetworkedVolumeIndex, t);
+            
             if( distance < m_minimumDistance )
             {
                 m_nearTargetTimer += Time.deltaTime;
@@ -126,7 +159,7 @@ public class OuijaBoard : Puzzle
                     if (m_index == m_word.Length)
                     {
                         m_nearTargetTimer = 0.0f;
-                        m_audio.volume = 0.0f;
+						GameManager.Instance.SetNetworkedVolume(kOuijaNetworkedVolumeIndex, t);
                         m_planchette.gameObject.SetActive(false);
 
 						StartCoroutine( PlayCompleteSound() );
@@ -143,7 +176,9 @@ public class OuijaBoard : Puzzle
             }
         }
 
-        m_nearTargetAudioSource.volume = m_nearTargetTimer > 0.0f ? 1.0f : 0.0f;
+		GameManager.Instance.SetNetworkedVolume(kNearTargetNetworkedVolumeIndex, ((m_nearTargetTimer > 0.0f) ? 1.0f : 0.0f));
+		
+		return;
     }
 
 	private IEnumerator PlayCompleteSound()
